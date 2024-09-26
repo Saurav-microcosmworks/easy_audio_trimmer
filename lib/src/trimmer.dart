@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter/ffmpeg_kit_config.dart';
-import 'package:ffmpeg_kit_flutter/return_code.dart';
-import 'package:path/path.dart';
 
-import 'package:flutter/material.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'utils/file_formats.dart';
@@ -245,23 +242,47 @@ class Trimmer {
 
     command += '"$outputPath"';
 
-    FFmpegKit.executeAsync(command, (session) async {
-      final state =
-          FFmpegKitConfig.sessionStateToString(await session.getState());
-      final returnCode = await session.getReturnCode();
-
-      debugPrint("FFmpeg process exited with state $state and rc $returnCode");
-
-      if (ReturnCode.isSuccess(returnCode)) {
+    ///
+    ///
+    final FFmpegVideoEditorExecute executeConfig = FFmpegVideoEditorExecute(
+      command: command,
+      outputPath: outputPath,
+    );
+    executeConfig.runCommand().then((_) {
+      final bool success = File(executeConfig.outputPath).existsSync();
+      if (success) {
         debugPrint("FFmpeg processing completed successfully.");
         debugPrint('Audio successfully saved');
-        onSave(outputPath);
+        onSave(executeConfig.outputPath);
       } else {
         debugPrint("FFmpeg processing failed.");
         debugPrint('Couldn\'t save the audio');
         onSave(null);
       }
+    }).catchError((error) {
+      debugPrint("Error executing FFmpeg: $error");
+      onSave(null);
     });
+
+    ///
+    ///
+    // FFmpegKit.executeAsync(command, (session) async {
+    //   final state =
+    //       FFmpegKitConfig.sessionStateToString(await session.getState());
+    //   final returnCode = await session.getReturnCode();
+    //
+    //   debugPrint("FFmpeg process exited with state $state and rc $returnCode");
+    //
+    //   if (ReturnCode.isSuccess(returnCode)) {
+    //     debugPrint("FFmpeg processing completed successfully.");
+    //     debugPrint('Audio successfully saved');
+    //     onSave(outputPath);
+    //   } else {
+    //     debugPrint("FFmpeg processing failed.");
+    //     debugPrint('Couldn\'t save the audio');
+    //     onSave(null);
+    //   }
+    // });
 
     // return _outputPath;
   }
@@ -299,5 +320,31 @@ class Trimmer {
   /// Clean up
   void dispose() {
     _controller.close();
+  }
+}
+
+class FFmpegVideoEditorExecute {
+  const FFmpegVideoEditorExecute({
+    required this.command,
+    required this.outputPath,
+  });
+
+  final String command;
+  final String outputPath;
+
+  Future<void> runCommand() async {
+    try {
+      final result = await Process.run('ffmpeg', command.split(' '));
+      if (result.exitCode != 0) {
+        throw Exception('FFmpeg error: ${result.stderr}');
+      }
+      if (kDebugMode) {
+        print('FFmpeg output: ${result.stdout}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error executing FFmpeg: $e');
+      }
+    }
   }
 }
