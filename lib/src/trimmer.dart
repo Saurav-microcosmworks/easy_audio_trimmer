@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit.dart';
-import 'package:ffmpeg_kit_flutter_min_gpl/ffmpeg_kit_config.dart';
-import 'package:ffmpeg_kit_flutter_min_gpl/return_code.dart';
+import 'package:ffmpeg_kit_flutter_video/ffmpeg_kit.dart';
+import 'package:ffmpeg_kit_flutter_video/ffmpeg_kit_config.dart';
+import 'package:ffmpeg_kit_flutter_video/return_code.dart';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart';
