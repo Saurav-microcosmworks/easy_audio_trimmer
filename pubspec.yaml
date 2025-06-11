@@ -11,11 +11,12 @@ dependencies:
     sdk: flutter
 
   audioplayers: ^6.1.0
-  ffmpeg_kit_flutter_full_gpl:
-    git:
-      url: https://github.com/Sahad2701/ffmpeg_kit_flutter_full_gpl.git
-      ref: flutter-upgrade/remove-v1-embedding
-  intl: ^0.19.0
+  ffmpeg_kit_16kb: ^1.0.2
+#  ffmpeg_kit_flutter_full_gpl:
+#    git:
+#      url: https://github.com/Sahad2701/ffmpeg_kit_flutter_full_gpl.git
+#      ref: flutter-upgrade/remove-v1-embedding
+  intl: ^0.20.2
   path: ^1.9.0
   path_provider: ^2.1.5
 
